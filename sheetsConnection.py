@@ -83,7 +83,7 @@ def update_send_sheets():
             print(current_time)
 
 
-            result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-semanal!J14:N2894").execute()
+            result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-semanal!J14:O2894").execute()
 
             values = result.get('values', [])
 
@@ -93,7 +93,7 @@ def update_send_sheets():
 
             for i in values:
                 if i[0]==current_time:
-                    price=i[4]
+                    price=i[5]
                     break
            
             start_time=datetime.datetime.now()
@@ -143,7 +143,7 @@ def update_send_sheets():
   
 
                 result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range="Bi-horária-diária!C3:C4",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]]]}).execute()
+                                    range="Bi-horária-diária!D3:D4",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]]]}).execute()
 
                 current_time = datetime.datetime.now()
                 minutes=(current_time.minute//15)*15
@@ -153,7 +153,7 @@ def update_send_sheets():
                 print(current_time)
 
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-diária!B13:D768").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-diária!C13:E2893").execute()
 
                 values = result.get('values', [])
 
@@ -186,7 +186,7 @@ def update_send_sheets():
             except HttpError as err:
                 print(err)
     
-    if TARIFA=="bi_semanal_autoconsumo":
+    if TARIFA=="autoconsumo":
             creds = None
             # The file token.json stores the user's access and refresh tokens, and is
             # created automatically when the authorization flow completes for the first
@@ -213,7 +213,7 @@ def update_send_sheets():
   
                 
                 result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range="Bi-horária-semanal-autoconsumo!C3:C6",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]],[PARAMETERS[2]],[PARAMETERS[3]]]}).execute()
+                                    range="Autoconsumo!C3:C4",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]],[PARAMETERS[2]],[PARAMETERS[3]]]}).execute()
 
 
                 current_time = datetime.datetime.now()
@@ -224,7 +224,7 @@ def update_send_sheets():
                 print(current_time)
 
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-semanal-autoconsumo!K14:P2894").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Autoconsumo!K14:P2894").execute()
 
                 values = result.get('values', [])
 
@@ -257,76 +257,7 @@ def update_send_sheets():
                 print(err)
 
     
-    if TARIFA=="bi_diaria_autoconsumo":
-            creds = None
-            # The file token.json stores the user's access and refresh tokens, and is
-            # created automatically when the authorization flow completes for the first
-            # time.
-            if os.path.exists('token.json'):
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-            # If there are no (valid) credentials available, let the user log in.
-            if not creds or not creds.valid:
-                if creds and creds.expired and creds.refresh_token:
-                    creds.refresh(Request())
-                else:
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        'client_secret.json', SCOPES)
-                    creds = flow.run_local_server(port=0)
-                # Save the credentials for the next run
-                with open('token.json', 'w') as token:
-                    token.write(creds.to_json())
-
-            try:
-                service = build('sheets', 'v4', credentials=creds)
-            
-                # Call the Sheets API
-                sheet = service.spreadsheets()
-  
-
-                result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range="Bi-horária-diária-autoconsumo!C3:C6",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]],[PARAMETERS[2]],[PARAMETERS[3]]]}).execute()
-
-
-                current_time = datetime.datetime.now()
-                minutes=(current_time.minute//15)*15
-                current_time=current_time.replace(minute=minutes)    
-                current_time=current_time.strftime("%-d/%-m/%y %H:%M")
-
-                print(current_time)
-
-
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-diária-autoconsumo!B13:E108").execute()
-
-                values = result.get('values', [])
-
-                if not values:
-                    print('No data found.')
-                    return
-
-                for i in values:
-                    if i[0]==current_time:
-                        price=i[3]
-                        break
-            
-                start_time=datetime.datetime.now()
-
-                end_time=start_time+datetime.timedelta(minutes=0.5)
-
-                
-                while datetime.datetime.now()<end_time:
-                    print('Begin Publish')
-                    publish_future = mqtt_connection.publish(
-                        topic="Lusita/DataBase/Receive",
-                        payload=json.dumps(price),
-                        qos=mqtt.QoS.AT_LEAST_ONCE
-                    )
-                    print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                    print('Publish End')
-                    t.sleep(10)
-                
-            except HttpError as err:
-                print(err)
-
+    
     
     if TARIFA=="tri_semanal":
             creds = None
@@ -366,7 +297,7 @@ def update_send_sheets():
                 print(current_time)
 
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-semanal!J14:N2894").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-semanal!J14:O2894").execute()
 
                 values = result.get('values', [])
 
@@ -376,7 +307,7 @@ def update_send_sheets():
 
                 for i in values:
                     if i[0]==current_time:
-                        price=i[4]
+                        price=i[5]
                         break
             
                 start_time=datetime.datetime.now()
@@ -425,7 +356,7 @@ def update_send_sheets():
   
 
                 result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range="Tri-horária-diária!C3:C5",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]],[PARAMETERS[2]]]}).execute()
+                                    range="Tri-horária-diária!D3:D5",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]],[PARAMETERS[2]]]}).execute()
 
 
 
@@ -437,147 +368,7 @@ def update_send_sheets():
                 print(current_time)
 
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-diária!B13:D108").execute()
-
-                values = result.get('values', [])
-
-                if not values:
-                    print('No data found.')
-                    return
-
-                for i in values:
-                    if i[0]==current_time:
-                        price=i[3]
-                        break
-            
-                start_time=datetime.datetime.now()
-
-                end_time=start_time+datetime.timedelta(minutes=0.5)
-
-                
-                while datetime.datetime.now()<end_time:
-                    print('Begin Publish')
-                    publish_future = mqtt_connection.publish(
-                        topic="Lusita/DataBase/Receive",
-                        payload=json.dumps(price),
-                        qos=mqtt.QoS.AT_LEAST_ONCE
-                    )
-                    print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                    print('Publish End')
-                    t.sleep(10)
-                
-            except HttpError as err:
-                print(err)
-    
-    if TARIFA=="tri_semanal_autoconsumo":
-            creds = None
-            # The file token.json stores the user's access and refresh tokens, and is
-            # created automatically when the authorization flow completes for the first
-            # time.
-            if os.path.exists('token.json'):
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-            # If there are no (valid) credentials available, let the user log in.
-            if not creds or not creds.valid:
-                if creds and creds.expired and creds.refresh_token:
-                    creds.refresh(Request())
-                else:
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        'client_secret.json', SCOPES)
-                    creds = flow.run_local_server(port=0)
-                # Save the credentials for the next run
-                with open('token.json', 'w') as token:
-                    token.write(creds.to_json())
-
-            try:
-                service = build('sheets', 'v4', credentials=creds)
-                
-                # Call the Sheets API
-                sheet = service.spreadsheets()
-  
-
-                result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                        range="Tri-horária-semanal-autoconsumo!C3:C7",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]],[PARAMETERS[2]],[PARAMETERS[3]],[PARAMETERS[4]]]}).execute()
-
-
-                current_time = datetime.datetime.now()
-                minutes=(current_time.minute//15)*15
-                current_time=current_time.replace(minute=minutes)    
-                current_time=current_time.strftime("%-d/%-m/%y %H:%M")
-
-                print(current_time)
-
-
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-semanal-autoconsumo!J14:N2894").execute()
-
-                values = result.get('values', [])
-
-                if not values:
-                    print('No data found.')
-                    return
-
-                for i in values:
-                    if i[0]==current_time:
-                        price=i[4]
-                        break
-            
-                start_time=datetime.datetime.now()
-
-                end_time=start_time+datetime.timedelta(minutes=0.5)
-
-                
-                while datetime.datetime.now()<end_time:
-                    print('Begin Publish')
-                    publish_future = mqtt_connection.publish(
-                        topic="Lusita/DataBase/Receive",
-                        payload=json.dumps(price),
-                        qos=mqtt.QoS.AT_LEAST_ONCE
-                    )
-                    print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                    print('Publish End')
-                    t.sleep(10)
-                
-            except HttpError as err:
-                print(err)
-
-    if TARIFA=="tri_diaria_autoconsumo":
-            creds = None
-            # The file token.json stores the user's access and refresh tokens, and is
-            # created automatically when the authorization flow completes for the first
-            # time.
-            if os.path.exists('token.json'):
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-            # If there are no (valid) credentials available, let the user log in.
-            if not creds or not creds.valid:
-                if creds and creds.expired and creds.refresh_token:
-                    creds.refresh(Request())
-                else:
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        'client_secret.json', SCOPES)
-                    creds = flow.run_local_server(port=0)
-                # Save the credentials for the next run
-                with open('token.json', 'w') as token:
-                    token.write(creds.to_json())
-
-            try:
-                service = build('sheets', 'v4', credentials=creds)
-                
-                # Call the Sheets API
-                sheet = service.spreadsheets()
-  
-
-                
-                result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range="Tri-horária-diária-autoconsumo!C3:C7",valueInputOption="RAW", body={"values":[[PARAMETERS[0]],[PARAMETERS[1]],[PARAMETERS[2]],[PARAMETERS[3]],[PARAMETERS[4]]]}).execute()
-
-                current_time = datetime.datetime.now()
-                minutes=(current_time.minute//15)*15
-                current_time=current_time.replace(minute=minutes)    
-                current_time=current_time.strftime("%-d/%-m/%y %H:%M")
-
-                print(current_time)
-
-
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-diária-autoconsumo!B13:D108").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-diária!C13:E2893").execute()
 
                 values = result.get('values', [])
 
@@ -709,7 +500,7 @@ def timed_send():
             sheet = service.spreadsheets()
         
 
-            result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-semanal!J14:N2894").execute()
+            result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-semanal!J14:O2894").execute()
 
             values = result.get('values', [])
 
@@ -728,7 +519,7 @@ def timed_send():
 
                 for i in values:
                     if i[0]==current_time:
-                        price=i[4]
+                        price=i[5]
                         break
 
 
@@ -751,7 +542,7 @@ def timed_send():
             else:
                 for i in values:
                     if i[0]==TIME:
-                        price=i[4]
+                        price=i[5]
                         break
 
                 TIME_FLAG=False
@@ -795,7 +586,7 @@ def timed_send():
                 sheet = service.spreadsheets()
   
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-diária!B13:D768").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-diária!C13:E2893").execute()
 
                 values = result.get('values', [])
 
@@ -856,7 +647,7 @@ def timed_send():
             except HttpError as err:
                 print(err)
 
-    if TARIFA=="bi_semanal_autoconsumo":
+    if TARIFA=="autoconsumo":
             creds = None
             # The file token.json stores the user's access and refresh tokens, and is
             # created automatically when the authorization flow completes for the first
@@ -883,7 +674,7 @@ def timed_send():
   
 
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-semanal-autoconsumo!K14:P2894").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Autoconsumo!K14:P2894").execute()
 
                 values = result.get('values', [])
 
@@ -942,95 +733,7 @@ def timed_send():
             except HttpError as err:
                 print(err)
 
-    if TARIFA=="bi_diaria_autoconsumo":
-            creds = None
-            # The file token.json stores the user's access and refresh tokens, and is
-            # created automatically when the authorization flow completes for the first
-            # time.
-            if os.path.exists('token.json'):
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-            # If there are no (valid) credentials available, let the user log in.
-            if not creds or not creds.valid:
-                if creds and creds.expired and creds.refresh_token:
-                    creds.refresh(Request())
-                else:
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        'client_secret.json', SCOPES)
-                    creds = flow.run_local_server(port=0)
-                # Save the credentials for the next run
-                with open('token.json', 'w') as token:
-                    token.write(creds.to_json())
-
-            try:
-                service = build('sheets', 'v4', credentials=creds)
-            
-                # Call the Sheets API
-                sheet = service.spreadsheets()
-  
-
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Bi-horária-diária-autoconsumo!B13:E108").execute()
-
-                values = result.get('values', [])
-
-                if not values:
-                    print('No data found.')
-                    return
-
-
-
-                if not TIME_FLAG:
-
-                    current_time = datetime.datetime.now()
-                    minutes=(current_time.minute//15)*15
-                    current_time=current_time.replace(minute=minutes)    
-                    current_time=current_time.strftime("%-d/%-m/%y %H:%M")
-
-                    print(current_time)
-
-                    for i in values:
-                        if i[0]==current_time:
-                            price=i[3]
-                            break
-                
-                    start_time=datetime.datetime.now()
-
-                    end_time=start_time+datetime.timedelta(minutes=0.5)
-
-                    
-                    while datetime.datetime.now()<end_time:
-                        print('Begin Publish')
-                        publish_future = mqtt_connection.publish(
-                            topic="Lusita/DataBase/Receive",
-                            payload=json.dumps(price),
-                            qos=mqtt.QoS.AT_LEAST_ONCE
-                        )
-                        print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                        print('Publish End')
-                        t.sleep(10)
-
-                    else:
-                        for i in values:
-                            if i[0]==TIME:
-                                price=i[3]
-                                break
-
-                        TIME_FLAG=False
-                
-                        print('Begin Publish')
-                        publish_future = mqtt_connection.publish(
-                                topic="Lusita/DataBase/Receive",
-                                payload=json.dumps(price),
-                                qos=mqtt.QoS.AT_LEAST_ONCE
-                            )
-                        print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                        print('Publish End')
-
-
-
-                
-            except HttpError as err:
-                print(err)
-
+   
     if TARIFA=="tri_semanal":
             creds = None
             # The file token.json stores the user's access and refresh tokens, and is
@@ -1057,7 +760,7 @@ def timed_send():
                 sheet = service.spreadsheets()
   
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-semanal!J14:N2894").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-semanal!J14:O2894").execute()
 
                 values = result.get('values', [])
 
@@ -1074,7 +777,7 @@ def timed_send():
                     print(current_time)
                     for i in values:
                         if i[0]==current_time:
-                            price=i[4]
+                            price=i[5]
                             break
                 
                     start_time=datetime.datetime.now()
@@ -1096,7 +799,7 @@ def timed_send():
                 else:
                     for i in values:
                             if i[0]==TIME:
-                                price=i[4]
+                                price=i[5]
                                 break
 
                     TIME_FLAG=False
@@ -1140,7 +843,7 @@ def timed_send():
                 sheet = service.spreadsheets()
 
 
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-diária!B13:D108").execute()
+                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-diária!C13:E2893").execute()
 
                 values = result.get('values', [])
 
@@ -1156,175 +859,6 @@ def timed_send():
                     current_time=current_time.strftime("%-d/%-m/%y %H:%M")
 
                     print(current_time)
-                    for i in values:
-                        if i[0]==current_time:
-                            price=i[3]
-                            break
-                
-                    start_time=datetime.datetime.now()
-
-                    end_time=start_time+datetime.timedelta(minutes=0.5)
-
-                    
-                    while datetime.datetime.now()<end_time:
-                        print('Begin Publish')
-                        publish_future = mqtt_connection.publish(
-                            topic="Lusita/DataBase/Receive",
-                            payload=json.dumps(price),
-                            qos=mqtt.QoS.AT_LEAST_ONCE
-                        )
-                        print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                        print('Publish End')
-                        t.sleep(10)
-                    
-                    else:
-                        for i in values:
-                            if i[0]==TIME:
-                                price=i[3]
-                                break
-                        
-                        TIME_FLAG=False
-                
-                        print('Begin Publish')
-                        publish_future = mqtt_connection.publish(
-                                    topic="Lusita/DataBase/Receive",
-                                    payload=json.dumps(price),
-                                    qos=mqtt.QoS.AT_LEAST_ONCE
-                                )
-                        print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                        print('Publish End')
-
-                
-            except HttpError as err:
-                print(err)
-
-    if TARIFA=="tri_semanal_autoconsumo":
-            creds = None
-            # The file token.json stores the user's access and refresh tokens, and is
-            # created automatically when the authorization flow completes for the first
-            # time.
-            if os.path.exists('token.json'):
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-            # If there are no (valid) credentials available, let the user log in.
-            if not creds or not creds.valid:
-                if creds and creds.expired and creds.refresh_token:
-                    creds.refresh(Request())
-                else:
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        'client_secret.json', SCOPES)
-                    creds = flow.run_local_server(port=0)
-                # Save the credentials for the next run
-                with open('token.json', 'w') as token:
-                    token.write(creds.to_json())
-
-            try:
-                service = build('sheets', 'v4', credentials=creds)
-                
-                # Call the Sheets API
-                sheet = service.spreadsheets()
-
-
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-semanal-autoconsumo!J14:N2894").execute()
-
-                values = result.get('values', [])
-
-                if not TIME_FLAG:
-
-                    current_time = datetime.datetime.now()
-                    minutes=(current_time.minute//15)*15
-                    current_time=current_time.replace(minute=minutes)    
-                    current_time=current_time.strftime("%-d/%-m/%y %H:%M")
-
-                    print(current_time)
-                    if not values:
-                        print('No data found.')
-                        return
-
-                    for i in values:
-                        if i[0]==current_time:
-                            price=i[4]
-                            break
-                
-                    start_time=datetime.datetime.now()
-
-                    end_time=start_time+datetime.timedelta(minutes=0.5)
-
-                    
-                    while datetime.datetime.now()<end_time:
-                        print('Begin Publish')
-                        publish_future = mqtt_connection.publish(
-                            topic="Lusita/DataBase/Receive",
-                            payload=json.dumps(price),
-                            qos=mqtt.QoS.AT_LEAST_ONCE
-                        )
-                        print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                        print('Publish End')
-                        t.sleep(10)
-
-                else:
-                    for i in values:
-                            if i[0]==TIME:
-                                price=i[4]
-                                break
-                    
-                    TIME_FLAG=False
-                
-                        
-                    print('Begin Publish')
-                    publish_future = mqtt_connection.publish(
-                                    topic="Lusita/DataBase/Receive",
-                                    payload=json.dumps(price),
-                                    qos=mqtt.QoS.AT_LEAST_ONCE
-                                )
-                    print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                    print('Publish End')
-
-                
-            except HttpError as err:
-                print(err)
-
-    if TARIFA=="tri_diaria_autoconsumo":
-            creds = None
-            # The file token.json stores the user's access and refresh tokens, and is
-            # created automatically when the authorization flow completes for the first
-            # time.
-            if os.path.exists('token.json'):
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-            # If there are no (valid) credentials available, let the user log in.
-            if not creds or not creds.valid:
-                if creds and creds.expired and creds.refresh_token:
-                    creds.refresh(Request())
-                else:
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        'client_secret.json', SCOPES)
-                    creds = flow.run_local_server(port=0)
-                # Save the credentials for the next run
-                with open('token.json', 'w') as token:
-                    token.write(creds.to_json())
-
-            try:
-                service = build('sheets', 'v4', credentials=creds)
-                
-                # Call the Sheets API
-                sheet = service.spreadsheets()
-
-                result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range="Tri-horária-diária-autoconsumo!B13:D108").execute()
-
-                values = result.get('values', [])
-
-                if not TIME_FLAG:
-                    
-                    current_time = datetime.datetime.now()
-                    minutes=(current_time.minute//15)*15
-                    current_time=current_time.replace(minute=minutes)    
-                    current_time=current_time.strftime("%-d/%-m/%y %H:%M")
-
-                    print(current_time)
-
-                    if not values:
-                        print('No data found.')
-                        return
-
                     for i in values:
                         if i[0]==current_time:
                             price=i[2]
@@ -1346,28 +880,28 @@ def timed_send():
                         print('Publish End')
                         t.sleep(10)
                     
-                else:
-                    for i in values:
+                    else:
+                        for i in values:
                             if i[0]==TIME:
                                 price=i[2]
                                 break
-
-                    TIME_FLAG=False
-                
                         
-                    print('Begin Publish')
-                    publish_future = mqtt_connection.publish(
+                        TIME_FLAG=False
+                
+                        print('Begin Publish')
+                        publish_future = mqtt_connection.publish(
                                     topic="Lusita/DataBase/Receive",
                                     payload=json.dumps(price),
                                     qos=mqtt.QoS.AT_LEAST_ONCE
                                 )
-                    print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
-                    print('Publish End')
-
+                        print("Published: '" + json.dumps(price) + "' to the topic: " + "'test/testing'")
+                        print('Publish End')
 
                 
             except HttpError as err:
                 print(err)
+
+    
 
     if TARIFA=="indexada":
             creds = None
@@ -1584,7 +1118,7 @@ def BrokerConnect():
 #If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-SAMPLE_SPREADSHEET_ID = '1m9LccczO1oGm-q5yPl_lR5pSnfLECJY0MqSVBfmJxtw'
+SAMPLE_SPREADSHEET_ID = '1HzOQtYnj1_aF8OBQapFaFqLKS5pL9lK2vd1TWTdhjiM'
 SAMPLE_RANGE_NAME = 'Autoconsumo!A1'
 
 
